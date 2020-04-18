@@ -13,15 +13,15 @@ import os
 
 def main():
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    batchSize = 1000 #一次迭代所用样本量为1000时占3.2G
+    batchSize = 800 #一次迭代所用样本量为1000时占3.2G
     lr = 1e-4
     epochs = 5
-    model_path = "captcha-breaker.pth"
+    model_path = "captcha-breaker-v%d.pth" % CaptchaNN.version()
     data_path = "./data"
 
     trainIter, testIter = dataset.getCaptchaDataset(batchSize, data_path)
     trainNum = len(trainIter) #训练集所有样本数量。用于显示进度条
-    reportNum = 50 #每迭代200次报告一次学习状况
+    reportNum = 1000 #每迭代1000次报告一次学习状况
 
     net = CaptchaNN()
 
@@ -30,7 +30,8 @@ def main():
     loss_list = []
 
     loss_fn = nn.CrossEntropyLoss()
-    optimizer = torch.optim.Adam(net.parameters(), lr=lr, weight_decay=0.00000, betas=(0.9, 0.999), eps=1e-08)
+    #optimizer = torch.optim.Adam(net.parameters(), lr=lr, weight_decay=0.00000, betas=(0.9, 0.999), eps=1e-08)
+    optimizer = torch.optim.Adam(net.parameters(), lr=lr)
 
     if os.path.exists(model_path):
         print("Loaded saved dict ", model_path)

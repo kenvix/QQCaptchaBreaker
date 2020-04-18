@@ -8,7 +8,12 @@ import torchvision.models as tvmodels
 from torchvision import datasets, transforms
 import dataset
 
+
 class CaptchaNN(nn.Module):
+    @staticmethod
+    def version():
+        return 1
+
     def __init__(self):
         super(CaptchaNN, self).__init__()
         self.kernel_size = 5
@@ -37,10 +42,10 @@ class CaptchaNN(nn.Module):
             nn.ReLU(),
         )
 
-        self.fc1 = nn.Linear(128, 62)
-        self.fc2 = nn.Linear(128, 62)
-        self.fc3 = nn.Linear(128, 62)
-        self.fc4 = nn.Linear(128, 62)
+        self.fc1 = nn.Linear(128, self.class_num)
+        self.fc2 = nn.Linear(128, self.class_num)
+        self.fc3 = nn.Linear(128, self.class_num)
+        self.fc4 = nn.Linear(128, self.class_num)
 
     def forward(self, x):
         x = self.net(x)
