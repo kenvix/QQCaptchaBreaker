@@ -7,21 +7,49 @@ import matplotlib.pylab as plt
 import torchvision.models as tvmodels
 from torchvision import datasets, transforms
 import dataset
-from model import CaptchaNN
+from efficientnet_pytorch import EfficientNet
 import os
+
+
+class CaptchaNN(nn.Module):
+    @staticmethod
+    def version():
+        return 2
+
+    def __init__(self):
+        super(CaptchaNN, self).__init__()
+        self.kernel_size = 5
+        self.class_num = 26
+
+        self.eff_model = EfficientNet.from_pretrained('efficientnet-b2')
+        self.output_num = 1000
+
+        self.fc1 = nn.Linear(self.output_num, self.class_num)
+        self.fc2 = nn.Linear(self.output_num, self.class_num)
+        self.fc3 = nn.Linear(self.output_num, self.class_num)
+        self.fc4 = nn.Linear(self.output_num, self.class_num)
+
+    def forward(self, x):
+        x = self.eff_model(x)
+        #print(x.shape)
+        x1 = self.fc1(x)
+        x2 = self.fc2(x)
+        x3 = self.fc3(x)
+        x4 = self.fc4(x)
+        return x1, x2, x3, x4
 
 
 def main():
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    batchSize = 1000 #一次迭代所用样本量为1000时占3.2G
-    lr = 0.00008
-    epochs = 5
+    batchSize = 20 #一次迭代所用样本量为1000时占3.2G
+    lr = 0.001
+    epochs = 1
     model_path = "captcha-breaker-v%d.pth" % CaptchaNN.version()
     data_path = "./data"
 
-    trainIter, testIter = dataset.getCaptchaDataset(batchSize, data_path)
+    trainIter, testIter = dataset.getCaptchaDataset(batchSize, data_path, 224, 224)
     trainNum = len(trainIter) #训练集所有样本数量。用于显示进度条
-    reportNum = 1000 #每迭代1000次报告一次学习状况
+    reportNum = 100 #每迭代1000次报告一次学习状况
 
     net = CaptchaNN()
 
