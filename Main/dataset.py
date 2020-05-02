@@ -19,17 +19,21 @@ def getCaptchaDataset(batch_size, root_path, width=168, height=64):
 
 
 class CaptchaDataset(torch.utils.data.Dataset):
+    @staticmethod
+    def get_transform(width=168, height=64):
+        return transforms.Compose([
+            transforms.Resize((height, width)),
+            transforms.ToTensor(),
+            transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5])
+        ])
+
     def __init__(self, dir_path, width=168, height=64):
         super(CaptchaDataset, self).__init__()
         self.width = width
         self.height = height
 
         self.images_paths = [os.path.join(dir_path, img) for img in os.listdir(dir_path)]
-        self.transform = transforms.Compose([
-            transforms.Resize((self.height, self.width)),
-            transforms.ToTensor(),
-            transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5])
-        ])
+        self.transform = self.get_transform(width, height)
 
     def __len__(self):
         return len(self.images_paths)
