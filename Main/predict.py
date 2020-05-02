@@ -6,7 +6,7 @@ import numpy as np
 import matplotlib.pylab as plt
 import torchvision.models as tvmodels
 from torchvision import datasets, transforms
-import dataset
+from dataset import CaptchaDataset
 from modelv2 import CaptchaNN
 import os
 from PIL import Image
@@ -21,12 +21,14 @@ def main():
     net = CaptchaNN()
     net = net.to(device)
     net.load_state_dict(torch.load(model_path))
+    net.eval()
 
     #transform = dataset.CaptchaDataset.get_transform(224, 224)
 
-    train_dataset = dataset.CaptchaDataset(data_path, 224, 224)
+    train_dataset = CaptchaDataset(data_path, 224, 224)
     trainIter = DataLoader(train_dataset, batch_size=1, num_workers=0,
                                    shuffle=False, drop_last=False)
+
     for i, (X, label) in enumerate(trainIter):
         X = X.to(device)
         label = label.to(device)
@@ -44,7 +46,8 @@ def main():
         _, y3_pred = torch.max(y3.data, dim=1)
         _, y4_pred = torch.max(y4.data, dim=1)
 
-        print(bool(y1_pred == label1), bool(y2_pred == label2), bool(y3_pred == label3), bool(y4_pred == label4))
+        print(CaptchaDataset.decode_label((label1, label2, label3, label4)),
+              CaptchaDataset.decode_label((y1_pred.item(), y2_pred.item(), y3_pred.item(), y4_pred.item())))
 
 
 

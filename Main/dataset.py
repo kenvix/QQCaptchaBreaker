@@ -42,11 +42,21 @@ class CaptchaDataset(torch.utils.data.Dataset):
     def to_label(string):
         label = []
         for i in range(len(string)):
-            label.append(string[i])
+            label.append(ord(string[i]) - ord('a'))
 
-        le = preprocessing.LabelEncoder()
-        targets = le.fit_transform(label)
-        return targets
+        return label
+
+    @staticmethod
+    def decode_char(y):
+        return chr(ord('a') + y)
+
+    @staticmethod
+    def decode_label(y):
+        string = ""
+        for i in range(len(y)):
+            string += CaptchaDataset.decode_char(y[i])
+
+        return string
 
     def __getitem__(self, index):
         img = self.images_paths[index]
@@ -59,9 +69,12 @@ class CaptchaDataset(torch.utils.data.Dataset):
 
 
 def main():
-
+    lab = CaptchaDataset.to_label("abcfgxy")
+    print(lab)
+    print(CaptchaDataset.decode_label(lab))
     pass
 
 
 if __name__ == '__main__':
+
     main()
