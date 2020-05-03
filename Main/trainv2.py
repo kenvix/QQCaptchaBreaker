@@ -24,7 +24,7 @@ def main():
     trainIter, testIter = getCaptchaDataset(batchSize, data_path, 224, 224)
     trainNum = len(trainIter) #训练集所有样本数量。用于显示进度条
     testNum = len(testIter) #训练集所有样本数量。用于显示进度条
-    reportNum = 100 #每迭代1000次报告一次学习状况
+    reportNum = 8000 #每迭代1000次报告一次学习状况
 
     net = CaptchaNN()
 
@@ -67,6 +67,9 @@ def main():
             optimizer.step() #执行优化
             loss_list.append(loss.cpu().item())
 
+            if i % 100 == 0:
+                torch.save(net.state_dict(), model_path)
+
             if i % reportNum == 0:
                 #report train
 
@@ -90,7 +93,8 @@ def main():
                 tloss_list = []
 
                 for j, (tX, tlabel) in tqdm(enumerate(testIter), total=testNum):
-
+                    if j > 100:
+                        break
                     tX = tX.to(device)
                     tlabel = tlabel.to(device)
                     tlabel = tlabel.long()
@@ -132,7 +136,6 @@ def main():
                 plt.show()
             pass
 
-    torch.save(net.state_dict(), model_path)
 
 
 

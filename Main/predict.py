@@ -16,7 +16,7 @@ from torch.utils.data import DataLoader
 def main():
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     model_path = "captcha-breaker-v%d.pth" % CaptchaNN.version()
-    data_path = "./predict"
+    data_path = "./datav2/test"
 
     net = CaptchaNN()
     net = net.to(device)
@@ -27,7 +27,8 @@ def main():
 
     train_dataset = CaptchaDataset(data_path, 224, 224)
     trainIter = DataLoader(train_dataset, batch_size=1, num_workers=0,
-                                   shuffle=False, drop_last=False)
+                                   shuffle=True, drop_last=False)
+    rightNum = 0
 
     for i, (X, label) in enumerate(trainIter):
         X = X.to(device)
@@ -49,6 +50,10 @@ def main():
         print(CaptchaDataset.decode_label((label1, label2, label3, label4)),
               CaptchaDataset.decode_label((y1_pred.item(), y2_pred.item(), y3_pred.item(), y4_pred.item())))
 
+        if label1 == y1_pred.item() and label2 == y2_pred.item() and label3 == y3_pred.item() and label4 == y4_pred.item():
+            rightNum += 1
+
+    print("RIGHT: %d/%d %f" % (rightNum, i, rightNum/i))
 
 
 if __name__ == '__main__':

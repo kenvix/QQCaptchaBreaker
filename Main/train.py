@@ -13,7 +13,7 @@ import os
 
 def main():
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    batchSize = 1000 #一次迭代所用样本量为1000时占3.2G
+    batchSize = 400
     lr = 0.00008
     epochs = 5
     model_path = "captcha-breaker-v%d.pth" % CaptchaNN.version()
