@@ -38,3 +38,13 @@ class CaptchaNN(nn.Module):
         x3 = self.fc3(x)
         x4 = self.fc4(x)
         return x1, x2, x3, x4
+
+    def predict(self, X):
+        y1, y2, y3, y4 = self(X)
+
+        _, y1_pred = torch.max(y1.data, dim=1)
+        _, y2_pred = torch.max(y2.data, dim=1)
+        _, y3_pred = torch.max(y3.data, dim=1)
+        _, y4_pred = torch.max(y4.data, dim=1)
+
+        return (y1_pred.item(), y2_pred.item(), y3_pred.item(), y4_pred.item())

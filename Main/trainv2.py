@@ -17,7 +17,7 @@ def main():
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     batchSize = 10
     lr = 0.0001
-    epochs = 5
+    epochs = 15
     model_path = "captcha-breaker-v%d.pth" % CaptchaNN.version()
     data_path = "./datav2"
 
@@ -50,7 +50,7 @@ def main():
             label2 = label[:, 1]
             label3 = label[:, 2]
             label4 = label[:, 3]
-            #print(label1, label2, label3, label4)
+            # print(CaptchaDataset.decode_label((label1.data, label2.data, label3.data, label4.data)))
 
             y1, y2, y3, y4 = net(X)
 

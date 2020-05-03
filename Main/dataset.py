@@ -1,5 +1,6 @@
 import os
 from PIL import Image
+from torch.autograd import Variable
 from torch.utils import data
 import numpy as np
 from torchvision import transforms
@@ -26,6 +27,10 @@ class CaptchaDataset(torch.utils.data.Dataset):
             transforms.ToTensor(),
             transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5])
         ])
+
+    @staticmethod
+    def to_var(tensor):
+        return Variable(torch.unsqueeze(tensor, dim=0).float(), requires_grad=False)
 
     def __init__(self, dir_path, width=168, height=64):
         super(CaptchaDataset, self).__init__()
@@ -63,7 +68,7 @@ class CaptchaDataset(torch.utils.data.Dataset):
         label = img.replace('\\', '/').split("/")[-1].split(".")[0]
         asLabel = self.to_label(label)
         labelTensor = torch.Tensor(asLabel)
-        datao = Image.open(img)
+        datao = Image.open(img).convert('RGB')
         data = self.transform(datao)
         return data, labelTensor
 
