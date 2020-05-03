@@ -40,6 +40,8 @@ def main():
         print("Loaded saved dict ", model_path)
         net.load_state_dict(torch.load(model_path))
 
+    #torch.save(net, "full-" + model_path)
+
     for epoch in range(epochs):
         for i, (X, label) in tqdm(enumerate(trainIter), total=trainNum):
             X = X.to(device)
